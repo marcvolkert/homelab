@@ -1,0 +1,43 @@
+- name: Move docker/neo4j folder to /tmp/docker/neo4j/
+  copy:
+    src: ../../../../docker/neo4j/
+    dest: /tmp/docker/neo4j/
+  become: true
+  become_method: sudo
+  tags: [neo4j, container, build]
+
+- name: Build custom neo4j container
+  community.docker.docker_image:
+    build:
+      path: /tmp/docker/neo4j
+    name: neo4j
+    tag: latest
+    source: build
+  become: true
+  become_method: sudo
+  tags: [neo4j, container, build]
+
+- name: Deploy custom neo4j container
+  community.docker.docker_container:
+    image: neo4j:latest
+    name: neo4j
+    state: started
+    restart_policy: always
+    ports:
+    - "7474:7474"
+    - "7687:7687"
+    env:
+      NEO4J_PASSWORD: "{{ neo4j_password }}"
+  become: true
+  become_method: sudo
+  tags: [neo4j, container, deploy]
+
+- name: Open port 7474 and 7687
+  community.general.ufw:
+    rule: allow
+    port: 7474,7687
+    proto: tcp
+    state: enabled
+  become: true
+  become_method: sudo
+  tags: [firewall, open]

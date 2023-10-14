@@ -1,0 +1,4 @@
+postgres_user: postgres
+postgres_password: postgres
+dwh_user: dwh
+dwh_password: dwh

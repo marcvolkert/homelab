@@ -1,0 +1,6 @@
+.vscode/settings.json
+.DS_Store
+docker/.DS_Store
+ansible/roles/neo4j/vars/main.yml
+ansible/roles/postgres/vars/main.yml
+ansible/roles/couchbase/vars/main.yml

@@ -1,0 +1,35 @@
+- name: Deploy Couchbase container
+  community.docker.docker_container:
+    image: couchbase:community
+    name: couchbase
+    state: started
+    restart_policy: always
+    ports:
+    - "8091:8091"
+  become: true
+  become_method: sudo
+  tags: [couchbase, container, deploy]
+
+- name: Open port 8091
+  community.general.ufw:
+    rule: allow
+    port: 8091
+    proto: tcp
+    state: enabled
+  become: true
+  become_method: sudo
+  tags: [firewall, open]
+
+- name: Initialize Couchbase cluster
+  uri:
+    url: http://localhost:8091/clusterInit
+    method: POST
+    body: "username={{ couchbase_admin_username }}&password={{ couchbase_admin_password }}&port=SAME&sendStats=false&services=kv%2Cn1ql%2Cindex"
+    return_content: true
+    status_code: 200,401
+  register: couchbase_response
+  # 200: OK - Cluster newly initialized, 401: Unauthorized - Cluster already initialized
+  until: couchbase_response.status == 200 or couchbase_response.status == 401
+  retries: 5
+  delay: 5
+  tags: [couchbase, rest, api]

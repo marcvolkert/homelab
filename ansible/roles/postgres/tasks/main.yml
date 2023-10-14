@@ -1,0 +1,47 @@
+- name: Move docker/postgres folder to /tmp/docker/postgres/
+  copy:
+    src: ../../../../docker/postgres/
+    dest: /tmp/docker/postgres/
+  become: true
+  become_method: sudo
+  tags: [postgres, container, build]
+
+- name: Build custom postgres container
+  community.docker.docker_image:
+    build:
+      path: /tmp/docker/postgres
+    name: postgres
+    tag: latest
+    source: build
+  become: true
+  become_method: sudo
+  tags: [postgres, container, build]
+
+- name: Deploy custom postgres container
+  community.docker.docker_container:
+    image: postgres:latest
+    name: postgres
+    state: started
+    restart_policy: always
+    ports:
+    - "5432:5432"
+    env:
+      POSTGRES_USER: "{{ postgres_user }}"
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+      POSTGRES_DB: "{{ postgres_user }}"
+      DWH_USER: "{{ dwh_user }}"
+      DWH_PASSWORD: "{{ dwh_password }}"
+  become: true
+  become_method: sudo
+  tags: [postgres, container, deploy]
+
+
+- name: Open port 5432
+  community.general.ufw:
+    rule: allow
+    port: 5432
+    proto: tcp
+    state: enabled
+  become: true
+  become_method: sudo
+  tags: [firewall, open]

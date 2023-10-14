@@ -1,0 +1,21 @@
+- name: Make sure Docker is installed
+  apt:
+    name: docker.io
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+    autoremove: true
+    purge: true
+    allow_unauthenticated: true
+  become: true
+  become_method: sudo
+  tags: [docker, install]
+
+- name: Prune Docker images and volumes
+  community.docker.docker_prune:
+    images: yes
+    volumes: yes
+  become: true
+  become_method: sudo
+  tags: [docker, prune]

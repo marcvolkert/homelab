@@ -1,0 +1,11 @@
+- name: Setup Docker
+  hosts: debian_server
+  roles:
+    - docker
+
+- name: Install database containers
+  hosts: debian_server
+  roles:
+    - neo4j
+    - postgres
+    - couchbase
