@@ -1,0 +1,26 @@
+- name: Copy docker-compose.yml
+  copy:
+    src: ../../../../docker/spark/docker-compose.yml
+    dest: /tmp/docker/spark/
+  become: true
+  become_method: sudo
+  tags: [spark, copy]
+
+- name: Create Spark cluster
+  community.docker.docker_compose:
+    project_src: /tmp/docker/spark
+    state: present
+    restarted: true
+  become: true
+  become_method: sudo
+  tags: [spark, network]
+
+- name: Open port 7077 and 8080
+  community.general.ufw:
+    rule: allow
+    port: 7077,8080
+    proto: tcp
+    state: enabled
+  become: true
+  become_method: sudo
+  tags: [firewall, open]

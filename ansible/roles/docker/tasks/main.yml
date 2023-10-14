@@ -12,10 +12,47 @@
   become_method: sudo
   tags: [docker, install]
 
+- name: Make sure Docker Compose is installed
+  apt:
+    name: docker-compose
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+    autoremove: true
+    purge: true
+    allow_unauthenticated: true
+  become: true
+  become_method: sudo
+  tags: [docker, compose]
+
+- name: Make sure pip is installed
+  apt:
+    name: python3-pip
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+    force_apt_get: true
+    autoremove: true
+    purge: true
+    allow_unauthenticated: true
+  become: true
+  become_method: sudo
+  tags: [docker, pip]
+
+- name: Make sure Python Docker module is installed with --break-system-packages
+  pip:
+    name: docker
+    state: present
+    extra_args: --break-system-packages
+  become: true
+  become_method: sudo
+  tags: [docker, pip]
+
 - name: Prune Docker images and volumes
   community.docker.docker_prune:
-    images: yes
-    volumes: yes
+    images: true
+    volumes: true
   become: true
   become_method: sudo
   tags: [docker, prune]

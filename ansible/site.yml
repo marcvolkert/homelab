@@ -9,3 +9,8 @@
     - neo4j
     - postgres
     - couchbase
+
+- name: Install Spark cluster
+  hosts: debian_server
+  roles:
+    - spark
