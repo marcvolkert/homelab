@@ -8,6 +8,7 @@
 
 - name: Create Spark cluster
   community.docker.docker_compose:
+    project_name: spark
     project_src: /tmp/docker/spark
     state: present
     restarted: true
